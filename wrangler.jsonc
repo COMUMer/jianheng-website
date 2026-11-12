@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "jianheng-site",
+  "name": "jianheng-website",
   "compatibility_date": "2026-11-13",
   "assets": {
     "directory": "./dist",
