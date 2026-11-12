@@ -1,0 +1,80 @@
+:root {
+  --green: #087d80;
+  --green-dark: #07565d;
+  --green-soft: #e7f2f0;
+  --header: 72px;
+  --soft: #f3f7f6;
+}
+
+.district-header:not(.is-scrolled) { border-bottom-color: #ffffff30; }
+.district-header:not(.is-scrolled) .header-inner { text-shadow: 0 1px 6px #071e28af; }
+.district-header:not(.is-scrolled) .site-nav > a[aria-current],
+.district-header:not(.is-scrolled) .nav-category-toggle[data-current] { color: #92f3e5; }
+.district-header .header-cta { border-radius: 24px; }
+.district-header .header-inner { width: min(1450px, calc(100% - var(--gutter) * 2)); }
+
+.scene-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.district-hero { margin-top: calc(-1px - var(--header)); scroll-margin-top: calc(-20px - var(--header)); background: #eaf5f1; }
+.district-stage {
+  --scene-height: clamp(480px, 86svh, 850px);
+  --scene-ratio: 2;
+  height: var(--scene-height);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #5a9d9c;
+}
+.district-map { position: absolute; top: 50%; left: 50%; width: max(100%, calc(var(--scene-height) * var(--scene-ratio))); aspect-ratio: var(--scene-ratio); transform: translate(-50%, -50%); }
+.district-illustration { width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.district-top-shade { position: absolute; z-index: 1; top: 0; right: 0; left: 0; height: min(155px, 32%); pointer-events: none; background: linear-gradient(180deg, #132b35af, #132b3547 52%, transparent); }
+.district-point { position: absolute; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; transform: translate(-50%, -50%); }
+.district-point:hover, .district-point:focus-visible, .district-point.is-selected { z-index: 3; }
+.district-point:focus-visible { outline-color: white; outline-offset: -4px; border-radius: 50%; }
+.district-point-pin { width: 21px; height: 21px; border: 6px solid #f4fffc; border-radius: 50%; background: #139a9d; box-shadow: 0 0 0 5px #b8f3ef67, 0 3px 14px #244c4b59; transition: transform .2s, box-shadow .2s; }
+.district-point:is(:hover, :focus-visible, .is-selected) .district-point-pin { transform: scale(1.12); box-shadow: 0 0 0 7px #abf5ef95, 0 5px 16px #244c4b59; }
+.district-point-label { position: absolute; left: 50%; bottom: 50px; transform: translate(-50%, 4px); padding: 5px 12px; border-radius: 2px; color: #075e62; background: #fffffff2; font-size: 13px; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; box-shadow: 0 4px 18px #16434828; }
+.district-point-label::after { content: ''; position: absolute; top: 100%; left: calc(50% - 5px); border: 5px solid transparent; border-top-color: #fffffff2; }
+.district-point:is(:hover, :focus-visible, .is-selected) .district-point-label { opacity: 1; transform: translate(-50%, 0); }
+.district-map-card { position: absolute; z-index: 4; right: var(--gutter); bottom: 40px; width: 249px; padding: 16px 20px 18px; border-top: 3px solid #138e90; background: #fff; color: #204448; box-shadow: 0 10px 32px #143b4b3b; }
+.district-map-card small, .district-map-card strong { display: block; }
+.district-map-card small { color: #417174; font-size: 11px; }
+.district-map-card strong { margin-top: 3px; font-size: 20px; font-weight: 600; }
+.district-map-card > a { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; color: #087477; font-size: 13px; }
+.district-map-card > a:hover { text-decoration: underline; }
+.map-card-close { position: absolute; top: 7px; right: 7px; display: grid; place-items: center; width: 30px; height: 30px; }
+.district-scroll { position: absolute; z-index: 3; bottom: 25px; left: 50%; display: grid; place-items: center; transform: translateX(-50%); width: 27px; height: 39px; border: 1.5px solid #fff; border-radius: 19px; color: #fff; background: #153d4d25; box-shadow: 0 2px 8px #173a4634; }
+.district-scroll:hover { background: #10465372; }
+.district-scroll:focus-visible { outline-color: white; }
+.district-attribution { position: absolute; bottom: 16px; left: var(--gutter); z-index: 1; padding: 2px 7px; color: #fff; background: #123f4a88; border-radius: 2px; font-size: 10px; }
+.district-mobile-links { display: none; }
+
+.about-overview { grid-template-columns: minmax(200px, .68fr) minmax(0, 1.32fr); }
+.about-overview h2 { margin-top: 10px; }
+.about-subtitle { margin-top: 14px; color: #4c6363; font-size: clamp(15px, 1.4vw, 20px); line-height: 1.65; }
+.solution-section { background: #f2f7f6; }
+.solution-panel, .services { background: #fff; }
+.site-footer { background: #07343e; border-top-color: #ffffff22; color: #ecfaf9; }
+.site-footer :is(.brand, .brand-type strong, .brand-type strong > span, .footer-col h3) { color: #f1fdfb; }
+.site-footer :is(.brand-type small, .footer-brand p, .footer-brand > span, .footer-col a, .footer-col button, .footer-col p, .footer-bottom) { color: #bed7d8; }
+.site-footer .footer-bottom { border-top-color: #d4f9f12b; }
+.site-footer :is(a,button):hover { color: #fff; }
+.site-footer :focus-visible { outline-color: #a1f0df; }
+
+@media (max-width: 900px) {
+  :root { --header: 68px; }
+  .about-overview { grid-template-columns: 1fr; }
+  .about-subtitle br { display: none; }
+}
+
+@media (max-width: 640px) {
+  .district-stage { --scene-height: clamp(230px, 66vw, 420px); }
+  .district-point-pin { width: 17px; height: 17px; border-width: 5px; box-shadow: 0 0 0 4px #b8f3ef67; }
+  .district-point-label { bottom: 45px; padding: 4px 8px; font-size: 11px; }
+  .district-scroll { bottom: 14px; height: 32px; width: 24px; }
+  .district-attribution { bottom: 10px; font-size: 9px; }
+  .district-map-card { right: 15px; bottom: 55px; width: 198px; padding: 10px 14px 12px; }
+  .district-map-card strong { font-size: 17px; }
+  .district-mobile-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; padding: 1px 0; background: #dce9e7; }
+  .district-mobile-links a { display: flex; gap: 8px; align-items: center; padding: 10px var(--gutter); font-size: 13px; color: #155c61; background: #f7fbfa; }
+  .district-mobile-links a:focus-visible { outline-offset: -3px; }
+}
