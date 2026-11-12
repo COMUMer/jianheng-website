@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { AlertCircle, X, Check, Copy, Download, ArrowRight, ArrowUpRight, ShieldCheck } from 'lucide-react'
 import { services } from '../data'
 
@@ -12,6 +13,7 @@ type Web3FormsResponse = { success?: boolean; message?: string }
 const emptyDraft: Draft = { name: '', company: '', contact: '', description: '' }
 const fallbackEmail = '1203229935@qq.com'
 const web3FormsEndpoint = 'https://api.web3forms.com/submit'
+const web3FormsCaptchaKey = '50b2fe65-b00b-4b9e-ad62-3ba471098be2'
 const emailPattern = /[^\s@]+@[^\s@]+\.[^\s@]+/
 
 function singleLine(value: string) {
@@ -25,9 +27,10 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
   const resultRef = useRef<HTMLHeadingElement>(null)
   const sentRef = useRef<HTMLHeadingElement>(null)
   const sendErrorRef = useRef<HTMLDivElement>(null)
+  const captchaRef = useRef<HCaptcha>(null)
+  const captchaBlockRef = useRef<HTMLDivElement>(null)
   const requestRef = useRef<AbortController | null>(null)
   const sendingRef = useRef(false)
-  const backdropDown = useRef(false)
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [errors, setErrors] = useState<Errors>({})
   const [service, setService] = useState(initialService)
@@ -41,6 +44,8 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
   const [consent, setConsent] = useState(false)
   const [consentError, setConsentError] = useState('')
   const [botField, setBotField] = useState('')
+  const [captchaToken, setCaptchaToken] = useState('')
+  const [captchaError, setCaptchaError] = useState('')
 
   useEffect(() => {
     const dialog = dialogRef.current
@@ -61,14 +66,46 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
     setConsent(false)
     setConsentError('')
     setBotField('')
-    dialog.showModal()
-    window.requestAnimationFrame(() => dialog.querySelector<HTMLElement>('#dialog-title')?.focus())
+    setCaptchaToken('')
+    setCaptchaError('')
+    const dialogEl = dialog
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const inertTargets = Array.from(document.querySelectorAll<HTMLElement>('.site-header, main, footer, .skip-link'))
+    inertTargets.forEach(target => target.setAttribute('inert', ''))
+    if (!dialogEl.open) dialogEl.show()
+    window.requestAnimationFrame(() => dialogEl.querySelector<HTMLElement>('#dialog-title')?.focus())
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+
+    function handleKeydown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab') return
+      const focusables = Array.from(dialogEl.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])',
+      )).filter(element => element.getClientRects().length > 0)
+      if (!focusables.length) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogEl)) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeydown)
     return () => {
+      document.removeEventListener('keydown', handleKeydown)
+      inertTargets.forEach(target => target.removeAttribute('inert'))
       requestRef.current?.abort()
       document.body.style.overflow = previousOverflow
-      dialog.close()
+      if (dialogEl.open) dialogEl.close()
+      opener?.focus()
     }
   }, [view, initialService])
 
@@ -87,6 +124,17 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
   function closePrivacy() {
     setShowPrivacy(false)
     window.requestAnimationFrame(() => (brief && !sent ? consentRef.current : nameRef.current)?.focus())
+  }
+
+  function resetCaptcha() {
+    setCaptchaToken('')
+    setCaptchaError('')
+    captchaRef.current?.resetCaptcha()
+  }
+
+  function openPrivacy() {
+    resetCaptcha()
+    setShowPrivacy(true)
   }
 
   function updateField<K extends keyof Draft>(key: K, value: string) {
@@ -117,6 +165,8 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
     setSendError('')
     setConsent(false)
     setConsentError('')
+    setCaptchaToken('')
+    setCaptchaError('')
   }
 
   function editBrief() {
@@ -125,6 +175,8 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
     setSendError('')
     setConsent(false)
     setConsentError('')
+    setCaptchaToken('')
+    setCaptchaError('')
     setCopied(false)
     setCopyError(false)
     window.requestAnimationFrame(() => nameRef.current?.focus())
@@ -143,6 +195,8 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
     setConsent(false)
     setConsentError('')
     setBotField('')
+    setCaptchaToken('')
+    setCaptchaError('')
     sendingRef.current = false
     window.requestAnimationFrame(() => nameRef.current?.focus())
   }
@@ -183,6 +237,13 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
     setConsentError('')
     setSendError('')
 
+    if (!captchaToken) {
+      setCaptchaError('请先完成人机验证。')
+      window.requestAnimationFrame(() => captchaBlockRef.current?.focus())
+      return
+    }
+    setCaptchaError('')
+
     const accessKey = (import.meta.env.VITE_WEB3FORMS_KEY ?? '').trim()
     if (!accessKey) {
       setSendError('发送服务尚未配置，请稍后重试。')
@@ -206,6 +267,7 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
       consent: 'yes',
       submitted_at: new Date().toISOString(),
       botcheck: botField,
+      'h-captcha-response': captchaToken,
       ...(email ? { email } : {}),
     }
 
@@ -228,6 +290,7 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
       setSendError('')
     } catch {
       setSendError(controller.signal.aborted ? '发送超时，请检查网络后重试。' : '请检查网络后重试。')
+      resetCaptcha()
       window.requestAnimationFrame(() => sendErrorRef.current?.focus())
     } finally {
       window.clearTimeout(timeout)
@@ -241,23 +304,19 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
   const mailtoHref = mailtoLink()
 
   return (
-    <dialog
-      ref={dialogRef}
-      className="contact-dialog"
-      onCancel={onClose}
-      onPointerDown={event => {
-        backdropDown.current = event.target === event.currentTarget
-      }}
-      onClick={event => {
-        if (backdropDown.current && event.target === event.currentTarget) onClose()
-        backdropDown.current = false
-      }}
-      aria-labelledby="dialog-title"
-    >
-      <div className="dialog-inner">
-        <button className="dialog-close" type="button" onClick={onClose} aria-label="关闭弹窗">
-          <X size={20} />
-        </button>
+    <>
+      {view && <div className="dialog-backdrop" onClick={onClose} aria-hidden="true" />}
+      <dialog
+        ref={dialogRef}
+        className="contact-dialog"
+        onCancel={onClose}
+        aria-modal="true"
+        aria-labelledby="dialog-title"
+      >
+        <div className="dialog-inner">
+          <button className="dialog-close" type="button" onClick={onClose} aria-label="关闭弹窗">
+            <X size={20} />
+          </button>
 
         {privacyView ? (
           <div className="privacy-content">
@@ -267,7 +326,7 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
             <h3>关于项目需求表单</h3>
             <p>你填写的称呼、公司、联系方式和需求描述，会在你点击“发送给见衡”后，通过第三方表单服务 Web3Forms 发送到见衡的项目邮箱（{fallbackEmail}），用于回复你的咨询。提交前会请你确认同意。</p>
             <h3>关于第三方服务</h3>
-            <p>表单提交由 Web3Forms 处理，提交记录可能保存在其服务器上，并可能涉及境外处理；具体保留时间和处理方式以 <a href="https://web3forms.com/privacy" target="_blank" rel="noreferrer">Web3Forms 隐私政策</a>为准。我们不会将信息用于营销或出售。</p>
+            <p>表单提交由 Web3Forms 处理，人机验证由 hCaptcha 提供；提交记录可能保存在其服务器上，并可能涉及境外处理。具体保留时间和处理方式以 <a href="https://web3forms.com/privacy" target="_blank" rel="noreferrer">Web3Forms 隐私政策</a>及 hCaptcha 的隐私政策为准。我们不会将信息用于营销或出售。</p>
             <h3>关于复制与下载</h3>
             <p>复制或下载由你主动发起，生成的内容由你自行保存与分享。关闭或刷新页面后，未导出的简报将无法恢复。</p>
             <h3>关于访问</h3>
@@ -342,7 +401,7 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
                 <label htmlFor="inquiry-consent">我同意见衡通过上述联系方式与我联系。</label>
                 <span>
                   我已阅读并同意
-                  <button className="note-link" type="button" onClick={() => setShowPrivacy(true)}>
+                  <button className="note-link" type="button" onClick={openPrivacy}>
                     隐私说明
                   </button>
                   。
@@ -354,6 +413,34 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
                 {consentError}
               </small>
             )}
+
+            <div className="captcha-block" ref={captchaBlockRef} tabIndex={-1} role="group" aria-label="人机验证">
+              <HCaptcha
+                ref={captchaRef}
+                sitekey={web3FormsCaptchaKey}
+                reCaptchaCompat={false}
+                theme="light"
+                onVerify={token => {
+                  setCaptchaToken(token)
+                  setCaptchaError('')
+                }}
+                onExpire={() => {
+                  setCaptchaToken('')
+                  setCaptchaError('验证码已过期，请重新验证。')
+                }}
+                onError={() => {
+                  setCaptchaToken('')
+                  setCaptchaError(`验证码加载失败，请刷新页面，或复制简报发送到 ${fallbackEmail}。`)
+                }}
+              />
+              {captchaError ? (
+                <small className="field-error" role="alert">
+                  {captchaError}
+                </small>
+              ) : (
+                <small className="captcha-hint">请先完成人机验证，再发送。</small>
+              )}
+            </div>
 
             {sendError && (
               <div className="form-alert" role="alert" tabIndex={-1} ref={sendErrorRef}>
@@ -509,7 +596,7 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
               <p className="form-note">
                 <ShieldCheck size={15} />
                 信息仅用于回复你的咨询。下一步会先生成简报，再由你确认发送。
-                <button className="note-link" type="button" onClick={() => setShowPrivacy(true)}>
+                <button className="note-link" type="button" onClick={openPrivacy}>
                   隐私说明
                 </button>
               </p>
@@ -522,6 +609,7 @@ export default function ContactDialog({ view, initialService, onClose }: { view:
           </>
         )}
       </div>
-    </dialog>
+      </dialog>
+    </>
   )
 }
