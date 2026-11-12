@@ -1,23 +1,76 @@
-import { ArrowRight, ArrowUp } from 'lucide-react'
+import { ArrowRight, ArrowUp, ArrowUpRight, MapPin } from 'lucide-react'
 import Logo from '../components/Logo'
+import { services } from '../data'
 
-export default function Footer({ onPrivacy, onContact }: { onPrivacy: () => void; onContact: () => void }) {
+const contactEmail = '1203229935@qq.com'
+
+export default function Footer({ onPrivacy, onContact }: { onPrivacy: () => void; onContact: (service?: string) => void }) {
   return (
     <footer className="company-footer">
-      <svg className="company-footer-waves" viewBox="0 0 1440 76" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0 31C260 88 420 4 720 27S1150 71 1440 18V76H0Z" />
-        <path d="M0 47C260 8 450 72 720 50S1190 18 1440 51V76H0Z" />
-        <path d="M0 56C320 85 490 31 720 46S1180 80 1440 58V76H0Z" />
-      </svg>
+      <div className="company-footer-waves" aria-hidden="true">
+        <span className="footer-wave footer-wave-back" />
+        <span className="footer-wave footer-wave-mid" />
+        <span className="footer-wave footer-wave-front" />
+      </div>
       <div className="company-footer-body">
         <div className="company-shell">
-          <div className="company-footer-main">
-            <div><Logo /><p>见衡（深圳）人工智能科技公司</p></div>
-            <nav aria-label="页脚导航"><a href="#about">关于见衡</a><a href="#scenarios">解决方案</a></nav>
-            <button type="button" className="company-pill" onClick={onContact}><span>咨询方案</span><ArrowRight size={16} aria-hidden="true" /></button>
+          <div className="company-footer-grid">
+            <div className="footer-brand">
+              <Logo />
+              <p className="footer-legal">见衡（深圳）人工智能科技有限公司</p>
+              <p className="footer-about">把软件、大模型与企业现有系统连接起来，让 AI 走进真实业务。</p>
+              <p className="footer-location"><MapPin size={14} aria-hidden="true" /> 深圳 · 中国</p>
+            </div>
+
+            <nav className="footer-nav" aria-label="页脚导航">
+              <h2>快速入口</h2>
+              <ul>
+                <li><a href="#home">首页</a></li>
+                <li><a href="#scenarios">解决方案</a></li>
+                <li><a href="#about">关于见衡</a></li>
+                <li><a href="#delivery">项目合作</a></li>
+              </ul>
+            </nav>
+
+            <div className="footer-services">
+              <h2>服务方向</h2>
+              <ul>
+                {services.map(service => (
+                  <li key={service.id}>
+                    <button type="button" onClick={() => onContact(service.title)}>
+                      <span>{service.title}</span>
+                      <ArrowUpRight size={14} aria-hidden="true" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="footer-contact">
+              <h2>联系我们</h2>
+              <dl>
+                <div>
+                  <dt>项目邮箱</dt>
+                  <dd><a href={`mailto:${contactEmail}?subject=${encodeURIComponent('[见衡官网] 项目咨询')}`}>{contactEmail}</a></dd>
+                </div>
+                <div>
+                  <dt>所在城市</dt>
+                  <dd>深圳 · 中国</dd>
+                </div>
+                <div>
+                  <dt>合作方式</dt>
+                  <dd>需求沟通 · 方案共创 · 交付迭代</dd>
+                </div>
+              </dl>
+              <button type="button" className="company-pill footer-cta" onClick={() => onContact()}>
+                <span>发起项目沟通</span><ArrowRight size={16} aria-hidden="true" />
+              </button>
+            </div>
           </div>
+
           <div className="company-footer-bottom">
-            <p>© {new Date().getFullYear()} 见衡科技 JIANHENG</p>
+            <p>Copyright © {new Date().getFullYear()} 见衡科技 JIANHENG 版权所有 All rights reserved.</p>
+            <p className="footer-note">以技术，见未来。</p>
             <div><button type="button" onClick={onPrivacy}>隐私说明</button><a href="#home">返回顶部 <ArrowUp size={15} aria-hidden="true" /></a></div>
           </div>
         </div>

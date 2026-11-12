@@ -1,7 +1,7 @@
 /* Overlay masthead, business navigation and solution panels. */
 .district-header:not(.is-scrolled) { background: transparent; border-bottom-color: #d8fff024; color: #edf9f8; }
 .district-header:not(.is-scrolled) :is(.brand, .brand-type strong, .brand-type strong > span, .site-nav > a, .nav-category-toggle, .menu-toggle) { color: #f5fffb; }
-.district-header:not(.is-scrolled) .brand-type small { color: #afccc8; }
+.district-header:not(.is-scrolled) .brand-type small { color: #c2dcd6; }
 .district-header:not(.is-scrolled) .site-nav > a[aria-current] { color: #8cf0d7; }
 .district-header:not(.is-scrolled) .site-nav > a[aria-current]::after { background: #8cf0d7; }
 .district-header:not(.is-scrolled) .header-cta { background: transparent; border: 1px solid #d1f6ee70; }

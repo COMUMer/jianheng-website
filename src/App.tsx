@@ -171,7 +171,7 @@ function App() {
         <Delivery onContact={openContact} />
       </main>
 
-      <Footer onPrivacy={() => setModal('privacy')} onContact={() => openContact()} />
+      <Footer onPrivacy={() => setModal('privacy')} onContact={openContact} />
 
       <ContactDialog view={modal} initialService={initialService} onClose={() => setModal(null)} />
     </>

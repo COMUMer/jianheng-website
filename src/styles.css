@@ -16,6 +16,7 @@
   --dark-muted: #b8d6c5;
   --red: #b3261e;
   --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  --serif: 'Songti SC', 'Noto Serif SC', 'Source Han Serif SC', 'STSong', 'SimSun', serif;
   --shell: 1200px;
   --gutter: clamp(20px, 4vw, 48px);
   --header: 80px;
@@ -336,10 +337,13 @@ button {
 }
 
 .brand-type small {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--muted-2);
+  font-size: 9.5px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.3em;
+  color: #5d7370;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .site-nav {
@@ -1384,7 +1388,7 @@ html.has-js .innovation-art.is-inview .innovation-mark path {
   top: 50%;
   left: 50%;
   z-index: 80;
-  width: min(580px, calc(100% - 32px));
+  width: min(720px, calc(100% - 32px));
   max-height: calc(100vh - 40px);
   max-height: calc(100dvh - 40px);
   margin: 0;
@@ -1433,6 +1437,24 @@ html.has-js .innovation-art.is-inview .innovation-mark path {
   color: var(--ink);
 }
 
+.contact-dialog--brief {
+  width: min(720px, calc(100% - 32px));
+}
+
+.contact-dialog--success {
+  width: min(720px, calc(100% - 32px));
+}
+
+.contact-dialog--brief .dialog-inner {
+  padding: 0;
+}
+
+.contact-dialog--brief .dialog-close {
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
 .dialog-inner h2 {
   margin: 12px 0 10px;
   font-size: clamp(24px, 3vw, 30px);
@@ -1442,12 +1464,6 @@ html.has-js .innovation-art.is-inview .innovation-mark path {
 
 .dialog-inner h2:focus {
   outline: none;
-}
-
-.dialog-intro {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--muted);
 }
 
 .dialog-inner form {
@@ -1468,20 +1484,24 @@ html.has-js .innovation-art.is-inview .innovation-mark path {
 }
 
 .service-options > div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
 }
 
 .service-options button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 13px;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 9px 3px;
   border: 1px solid var(--line);
   border-radius: 2px;
   background: #fff;
   font-size: 13px;
+  line-height: 1.35;
+  text-align: center;
   color: var(--muted);
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
@@ -1673,11 +1693,6 @@ html.has-js .innovation-art.is-inview .innovation-mark path {
   max-width: 100%;
 }
 
-.captcha-hint {
-  font-size: 12px;
-  color: var(--muted-2);
-}
-
 .captcha-block .field-error {
   text-align: center;
 }
@@ -1715,90 +1730,313 @@ html.has-js .innovation-art.is-inview .innovation-mark path {
   text-decoration: underline;
 }
 
-.brief-result .form-note {
-  justify-content: center;
+.contact-dialog--success .dialog-inner {
+  display: flex;
+  align-items: center;
+  min-height: 400px;
+  padding: 0;
 }
 
-.brief-result > .field-error {
+.contact-dialog--success .brief-sheet {
+  width: 100%;
+}
+
+.contact-dialog--success .dialog-close {
+  top: 16px;
+  right: 16px;
+}
+
+.brief-sheet {
   text-align: left;
 }
 
-.brief-result .form-submit {
-  margin-top: 16px;
+.brief-head {
+  padding: 30px 34px 22px;
+  padding-right: 70px;
+  border-bottom: 1px solid var(--line);
 }
 
-.send-status {
-  min-height: 18px;
-  margin-top: 8px;
+.dialog-head-top,
+.brief-head-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dialog-head {
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dialog-head-top {
+  padding-right: 40px;
+}
+
+.brief-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--green);
+  letter-spacing: 0.08em;
+}
+
+.brief-label::before {
+  content: '';
+  width: 14px;
+  height: 1px;
+  flex: 0 0 auto;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.brief-step {
+  font-size: 11px;
+  color: var(--muted-2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.dialog-head h2,
+.brief-head h2 {
+  margin: 14px 0 8px;
+  font-family: var(--serif);
+  font-size: clamp(30px, 3.2vw, 42px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.brief-lead {
+  max-width: 48ch;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.brief-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.brief-document {
+  min-width: 0;
+  padding: 24px 34px 30px;
+}
+
+.brief-document-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 0;
   font-size: 12px;
+  color: var(--muted);
+}
+
+.brief-document-head > span:first-child {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.brief-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   color: var(--muted-2);
 }
 
-.brief-success .result-actions {
-  margin-top: 24px;
-}
-
-.brief-result {
-  text-align: center;
-}
-
-.result-icon {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  margin: 0 auto 18px;
+.brief-status::before {
+  content: '';
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--green-soft);
-  color: var(--green);
+  background: var(--muted-2);
 }
 
-.brief-result > .eyebrow {
-  justify-content: center;
+.brief-meta {
+  margin: 18px 0 0;
 }
 
-.brief-result h2 {
-  outline: none;
+.brief-meta > div {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 18px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
 }
 
-.brief-result pre {
-  margin: 20px 0 12px;
-  padding: 18px;
-  max-height: 260px;
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--soft);
+.brief-meta dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.brief-meta dd {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.brief-need {
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.brief-need-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.brief-need p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.95;
   color: var(--ink-2);
-  font: 13px/1.9 var(--mono);
-  text-align: left;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.brief-result > p {
-  font-size: 14px;
-  color: var(--muted);
+.brief-send {
+  padding: 34px;
+  border-top: 1px solid var(--line);
+  background: #f3f6f1;
 }
 
-.result-actions {
+.brief-send .captcha-block .field-error {
+  text-align: left;
+}
+
+.brief-send-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.brief-send-consent {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
+  width: 100%;
 }
 
-.result-actions .button {
+.brief-send-consent .consent-field {
+  justify-content: flex-start;
+  max-width: 100%;
+  margin-top: 0;
+}
+
+.brief-send-captcha {
+  display: block;
+}
+
+.brief-send .consent-copy {
+  gap: 3px;
+  font-size: 12px;
+}
+
+.brief-send-fields .captcha-block {
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 0;
+}
+
+.brief-send .captcha-block > div {
+  max-width: 100%;
+}
+
+.brief-send .captcha-block iframe {
+  max-width: 100%;
+}
+
+.brief-send .form-submit {
+  display: flex;
+  width: 100%;
+  margin: 34px 0 0;
+  height: 48px;
+}
+
+.brief-send .form-alert {
+  width: 100%;
+  margin: 14px 0 0;
+  padding: 10px 12px;
+}
+
+.brief-send .send-status {
+  min-height: 0;
+  margin-top: 0;
+  font-size: 12px;
+  color: var(--muted-2);
+  text-align: left;
+}
+
+.brief-send .send-status:not(:empty) {
+  margin-top: 8px;
+}
+
+.brief-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 24px;
+  padding: 16px 34px 22px;
+  border-top: 1px solid var(--line);
+}
+
+.brief-edit {
+  flex: 0 0 auto;
+  min-height: 44px;
+  margin-top: 0;
+  padding: 10px 0;
+  font-size: 12px;
+}
+
+.brief-success-body {
+  padding: 24px 34px 34px;
+}
+
+.brief-success-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.brief-success-line svg {
+  color: var(--green);
+}
+
+.brief-success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.brief-success-actions .button {
   height: 44px;
   padding: 0 18px;
   font-size: 13px;
 }
 
-.copy-status {
-  min-height: 18px;
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--muted-2);
+.brief-success .brief-head {
+  border-bottom: 0;
+}
+
+.brief-success .text-button {
+  margin-top: 18px;
 }
 
 .text-button {
@@ -2035,6 +2273,34 @@ html.has-js [data-reveal].is-inview {
   }
 }
 
+@media (max-width: 380px) {
+  .brand-type small {
+    font-size: 8.5px;
+    letter-spacing: 0.22em;
+  }
+}
+
+@media (max-width: 760px) {
+  .contact-dialog--brief,
+  .contact-dialog--success {
+    width: min(620px, calc(100% - 24px));
+  }
+
+  .brief-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .brief-send-fields {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .brief-send {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+}
+
 @media (max-width: 620px) {
   :root {
     --gutter: 20px;
@@ -2192,12 +2458,42 @@ html.has-js [data-reveal].is-inview {
     font-size: 16px;
   }
 
-  .result-actions {
-    flex-direction: column;
+  .brief-head {
+    padding: 22px 20px 18px;
+    padding-right: 58px;
   }
 
-  .result-actions .button {
-    width: 100%;
+  .brief-head h2 {
+    font-size: 30px;
+  }
+
+  .brief-document,
+  .brief-send,
+  .brief-success-body {
+    padding: 20px;
+  }
+
+  .brief-send .form-submit {
+    max-width: none;
+  }
+
+  .brief-meta > div {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .brief-footer {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px 20px;
+  }
+
+  .brief-edit {
+    align-self: flex-start;
+  }
+
+  .brief-success-actions .button {
+    flex: 1 1 auto;
   }
 }
 
