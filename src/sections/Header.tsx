@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import type { RefObject } from 'react'
 import Logo from '../components/Logo'
@@ -17,7 +17,7 @@ type HeaderProps = {
 
 export default function Header({ active, menuOpen, scrolled, menuButtonRef, onToggleMenu, onNavigate, onContact, onScenario }: HeaderProps) {
   const [expanded, setExpanded] = useState<string | null>(null)
-  const solid = scrolled || menuOpen || expanded !== null
+  const solid = scrolled || menuOpen
 
   function navigate() {
     setExpanded(null)
@@ -36,8 +36,18 @@ export default function Header({ active, menuOpen, scrolled, menuButtonRef, onTo
             }
             return <div
               key={item.id}
-              className="nav-category"
-              onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setExpanded(current => current === item.id ? null : current) }}
+              className={`nav-category${expanded === item.id ? ' is-expanded' : ''}`}
+              onPointerEnter={event => {
+                if (event.pointerType !== 'mouse') return
+                setExpanded(item.id)
+              }}
+              onPointerLeave={event => {
+                if (event.pointerType === 'mouse') setExpanded(current => current === item.id ? null : current)
+              }}
+              onBlur={event => {
+                if (event.currentTarget.contains(event.relatedTarget)) return
+                setExpanded(current => current === item.id ? null : current)
+              }}
               onKeyDown={event => {
                 if (event.key === 'Escape' && expanded === item.id) {
                   event.stopPropagation()
@@ -47,14 +57,36 @@ export default function Header({ active, menuOpen, scrolled, menuButtonRef, onTo
               }}
             >
               <a className="nav-category-mobile" href={`#${item.id}`} aria-current={active === item.id ? 'location' : undefined} onClick={navigate}>{item.label}</a>
-              <button className="nav-category-toggle" type="button" data-current={active === item.id || undefined} aria-expanded={expanded === item.id} aria-controls={`nav-${item.id}`} onClick={() => setExpanded(value => value === item.id ? null : item.id)}>
+              <button
+                className="nav-category-toggle"
+                type="button"
+                data-current={active === item.id || undefined}
+                aria-haspopup="true"
+                aria-expanded={expanded === item.id}
+                aria-controls={`nav-${item.id}`}
+                onClick={event => {
+                  if (event.detail === 0) setExpanded(value => value === item.id ? null : item.id)
+                  else setExpanded(item.id)
+                }}
+              >
                 {item.label}<ChevronDown size={14} />
               </button>
-              <div className="nav-dropdown" id={`nav-${item.id}`} hidden={expanded !== item.id}>
-                <div className="nav-dropdown-top"><strong>{item.label}</strong><a href={`#${item.id}`} onClick={navigate}>查看全部 <ArrowRight size={13} /></a></div>
-                {scenarios.map((scenario, index) => <a key={scenario.id} href="#scenarios" onClick={() => { onScenario(index); navigate() }}>
-                  <span><strong>{scenario.label}</strong><small>{scenario.category}</small></span><ArrowUpRight size={16} />
-                </a>)}
+              <div
+                className="nav-dropdown"
+                id={`nav-${item.id}`}
+                onPointerEnter={() => setExpanded(item.id)}
+                onPointerLeave={event => {
+                  if (event.pointerType === 'mouse') setExpanded(current => current === item.id ? null : current)
+                }}
+              >
+                <div className="nav-dropdown-grid">
+                  {scenarios.map((scenario, index) => (
+                    <a key={scenario.id} href="#scenarios" onClick={() => { onScenario(index); navigate() }}>
+                      <span>{scenario.label}</span>
+                      <ArrowUpRight size={13} aria-hidden="true" />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           })}

@@ -390,6 +390,7 @@ button {
 .header-cta {
   height: 40px;
   padding: 0 18px;
+  border: 1px solid transparent;
   font-size: 13px;
 }
 
